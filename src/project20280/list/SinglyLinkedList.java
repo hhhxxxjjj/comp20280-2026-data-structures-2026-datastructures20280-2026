@@ -22,7 +22,7 @@ public class SinglyLinkedList<E> implements List<E> {
          * @param n reference to a node that should follow the new node
          */
         public Node(E e, Node<E> n) {
-            // TODO: Done
+
             this.element = e;
             this.next = n;
         }
@@ -44,7 +44,7 @@ public class SinglyLinkedList<E> implements List<E> {
          * @return the following node
          */
         public Node<E> getNext() {
-            // TODO: Done
+
             return next;
         }
 
@@ -56,7 +56,7 @@ public class SinglyLinkedList<E> implements List<E> {
          * @param n the node that should follow this one
          */
         public void setNext(Node<E> n) {
-            // TODO: Done
+
             this.next = n;
         }
     } //----------- end of nested Node class -----------
@@ -77,19 +77,19 @@ public class SinglyLinkedList<E> implements List<E> {
 
     //@Override
     public int size() {
-        // TODO: Done
+
         return size;
     }
 
     //@Override
     public boolean isEmpty() {
-        // TODO: Done
+
         return size == 0;
     }
 
     @Override
     public E get(int position) {
-        // TODO: Done
+
         if (position < 0 || position >= size) return null;
         Node<E> curr = head;
         for (int i = 0; i < position; i++) {
@@ -100,7 +100,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public void add(int position, E e) {
-        // TODO: Done
+
         if (position < 0 || position > size) return;
         if (position == 0) {
             addFirst(e);
@@ -118,14 +118,14 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public void addFirst(E e) {
-        // TODO: Done
+
         head = new Node<>(e, head);
         size++;
     }
 
     @Override
     public void addLast(E e) {
-        // TODO: Done
+
         if (isEmpty()) {
             addFirst(e);
         } else {
@@ -140,7 +140,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public E remove(int position) {
-        // TODO: Done
+
         if (position < 0 || position >= size) return null;
         if (position == 0) return removeFirst();
 
@@ -156,7 +156,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public E removeFirst() {
-        // TODO: Done
+
         if (isEmpty()) return null;
         E answer = head.getElement();
         head = head.getNext();
@@ -166,7 +166,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public E removeLast() {
-        // TODO: Done
+
         if (isEmpty()) return null;
         if (size == 1) return removeFirst();
 
@@ -201,6 +201,73 @@ public class SinglyLinkedList<E> implements List<E> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void sortedMerge(SinglyLinkedList<E> other) {
+        Node<E> dummy = new Node<>(null, null);
+        Node<E> last = dummy;
+
+        Node<E> t1 = this.head;
+        Node<E> t2 = other.head;
+
+        while (t1 != null && t2 != null) {
+            Comparable<E> c1 = (Comparable<E>) t1.getElement();
+            E e2 = t2.getElement();
+
+            if (c1.compareTo(e2) <= 0) {
+                last.setNext(t1);
+                t1 = t1.getNext();
+            } else {
+                last.setNext(t2);
+                t2 = t2.getNext();
+            }
+            last = last.getNext();
+        }
+
+        if (t1 != null) {
+            last.setNext(t1);
+        } else {
+            last.setNext(t2);
+        }
+
+        this.head = dummy.getNext();
+        this.size += other.size;
+
+        other.head = null;
+        other.size = 0;
+    }
+
+    public void reverse() {
+        if (head == null || head.getNext() == null) {
+            return;
+        }
+
+        Node<E> prev = null;
+        Node<E> curr = head;
+        Node<E> nextTemp = null;
+
+        while (curr != null) {
+            nextTemp = curr.getNext();
+            curr.setNext(prev);
+            prev = curr;
+            curr = nextTemp;
+        }
+        head = prev;
+    }
+
+    public SinglyLinkedList<E> clone() {
+        SinglyLinkedList<E> copy = new SinglyLinkedList<>();
+        if (this.isEmpty()) {
+            return copy;
+        }
+
+        Node<E> curr = this.head;
+        while (curr != null) {
+            copy.addLast(curr.getElement());
+            curr = curr.getNext();
+        }
+        return copy;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
         Node<E> curr = head;
@@ -226,8 +293,27 @@ public class SinglyLinkedList<E> implements List<E> {
         ll.addLast(-1);
 
         System.out.println(ll);
+
+        ll.reverse();
+        System.out.println("Reversed: " + ll);
+
         ll.remove(5);
         System.out.println(ll);
+
+        SinglyLinkedList<Integer> l1 = new SinglyLinkedList<>();
+        l1.addLast(2);
+        l1.addLast(6);
+        l1.addLast(20);
+
+        SinglyLinkedList<Integer> l2 = new SinglyLinkedList<>();
+        l2.addLast(1);
+        l2.addLast(5);
+        l2.addLast(25);
+
+        System.out.println("L1: " + l1);
+        System.out.println("L2: " + l2);
+
+        l1.sortedMerge(l2);
+        System.out.println("Merged L1: " + l1);
     }
 }
-

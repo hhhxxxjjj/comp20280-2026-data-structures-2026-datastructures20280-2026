@@ -26,17 +26,17 @@ public class LinkedQueue<E> implements Queue<E> {
 
     @Override
     public void enqueue(E e) {
-        ll.addLast(e);  // 队列尾部添加
+        ll.addLast(e);
     }
 
     @Override
     public E first() {
-        return ll.first();  // 返回队列头部
+        return ll.first();
     }
 
     @Override
     public E dequeue() {
-        return ll.removeFirst();  // 从队列头部移除
+        return ll.removeFirst();
     }
 
     public String toString() {

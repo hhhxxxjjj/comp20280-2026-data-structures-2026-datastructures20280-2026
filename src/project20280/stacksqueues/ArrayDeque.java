@@ -3,7 +3,7 @@ package project20280.stacksqueues;
 
 import project20280.interfaces.Deque;
 
-public class ArrayDeque<E> implements Deque<E> {
+public class  ArrayDeque<E> implements Deque<E> {
 
     private static final int CAPACITY = 1000;
     private E[] data;
