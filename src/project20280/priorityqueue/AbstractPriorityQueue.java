@@ -48,8 +48,10 @@ public abstract class AbstractPriorityQueue<K, V> implements PriorityQueue<K, V>
             k = key;
         }
 
-        protected void setValue(V value) {
+        public V setValue(V value) {
+            V old = v;
             v = value;
+            return old;
         }
 
         public String toString() {

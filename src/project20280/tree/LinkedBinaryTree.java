@@ -54,10 +54,60 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
     // accessor methods (not already implemented in AbstractBinaryTree)
 
     public static void main(String [] args) {
-        LinkedBinaryTree<String> bt = new LinkedBinaryTree<>();
-        String[] arr = { "A", "B", "C", "D", "E", null, "F", null, null, "G", "H", null, null, null, null };
+        LinkedBinaryTree<Integer> bt = new LinkedBinaryTree<>();
+
+        Integer[] arr = new Integer[]{1,
+                2, 3,
+                4, 5, 6, 7,
+                8, 9, 10, 11, 12, 13, 14, 15,
+                16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+                null, null, null, 35};
         bt.createLevelOrder(arr);
         System.out.println(bt.toBinaryTreeString());
+
+        System.out.println("Height: " + bt.height());
+
+        int[] callCount = new int[]{0};
+        int h = bt.heightWithCount(bt.root(), callCount);
+        System.out.println("Height (with count): " + h);
+        System.out.println("Number of recursive calls: " + callCount[0]);
+
+        System.out.println("Diameter: " + bt.diameter());
+
+        System.out.println("External nodes: " + bt.countExternal());
+        System.out.println("Left external nodes: " + bt.countLeftExternal());
+
+        System.out.println("Descendants of root: " + bt.countDescendants(bt.root()));
+
+        System.out.println("\n--- Q4 Preorder EXAMFUN ---");
+        LinkedBinaryTree<String> preTree = new LinkedBinaryTree<>();
+        preTree.buildPreorderEXAMFUN();
+        System.out.println(preTree.toBinaryTreeString());
+        System.out.println("Preorder: ");
+        for (Position<String> p : preTree.preorder()) {
+            System.out.print(p.getElement());
+        }
+        System.out.println();
+
+        System.out.println("\n--- Q4 Inorder EXAMFUN ---");
+        LinkedBinaryTree<String> inTree = new LinkedBinaryTree<>();
+        inTree.buildInorderEXAMFUN();
+        System.out.println(inTree.toBinaryTreeString());
+        System.out.print("Inorder: ");
+        for (Position<String> p : inTree.inorder()) {
+            System.out.print(p.getElement());
+        }
+        System.out.println();
+
+        System.out.println("\n--- Q4 Postorder EXAMFUN ---");
+        LinkedBinaryTree<String> postTree = new LinkedBinaryTree<>();
+        postTree.buildPostorderEXAMFUN();
+        System.out.println(postTree.toBinaryTreeString());
+        System.out.print("Postorder: ");
+        for (Position<String> p : postTree.postorder()) {
+            System.out.print(p.getElement());
+        }
+        System.out.println();
     }
 
 
@@ -159,14 +209,39 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
     }
 
     public void insert(E e) {
-        // TODO
-
+        if (isEmpty()) {
+            addRoot(e);
+        } else {
+            addRecursive(root, e);
+        }
     }
 
     // recursively add Nodes to binary tree in proper position
+    @SuppressWarnings("unchecked")
     private Node<E> addRecursive(Node<E> p, E e) {
-        // TODO
-        return null;
+        if (p == null) {
+            return createNode(e, null, null, null);
+        }
+        Comparable<E> comp = (Comparable<E>) e;
+        if (comp.compareTo(p.getElement()) < 0) {
+            if (p.getLeft() == null) {
+                Node<E> newNode = createNode(e, p, null, null);
+                p.setLeft(newNode);
+                size++;
+                return newNode;
+            } else {
+                return addRecursive(p.getLeft(), e);
+            }
+        } else {
+            if (p.getRight() == null) {
+                Node<E> newNode = createNode(e, p, null, null);
+                p.setRight(newNode);
+                size++;
+                return newNode;
+            } else {
+                return addRecursive(p.getRight(), e);
+            }
+        }
     }
 
     /**
@@ -323,6 +398,137 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
     public String toBinaryTreeString() {
         BinaryTreePrinter<E> btp = new BinaryTreePrinter<>(this);
         return btp.print();
+    }
+
+    // Q1(h): height with recursive call counter
+    public int heightWithCount(Position<E> p, int[] callCount) {
+        callCount[0]++;
+        if (p == null) {
+            return -1;
+        }
+        int leftHeight = heightWithCount(left(p), callCount);
+        int rightHeight = heightWithCount(right(p), callCount);
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+
+    // Q1(i): diameter of the binary tree
+    public int diameter() {
+        if (isEmpty()) return 0;
+        int[] result = new int[]{0};
+        diameterHelper(root(), result);
+        return result[0];
+    }
+
+    private int diameterHelper(Position<E> p, int[] result) {
+        if (p == null) return -1;
+        int leftHeight = diameterHelper(left(p), result);
+        int rightHeight = diameterHelper(right(p), result);
+        int pathThroughNode = leftHeight + rightHeight + 2;
+        if (pathThroughNode > result[0]) {
+            result[0] = pathThroughNode;
+        }
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+
+    // Q2: count all external nodes
+    public int countExternal() {
+        return countExternalHelper(root());
+    }
+
+    private int countExternalHelper(Position<E> p) {
+        if (p == null) return 0;
+        if (isExternal(p)) return 1;
+        return countExternalHelper(left(p)) + countExternalHelper(right(p));
+    }
+
+    // Q3: count only left external nodes
+    public int countLeftExternal() {
+        return countLeftExternalHelper(root(), false);
+    }
+
+    private int countLeftExternalHelper(Position<E> p, boolean isLeftChild) {
+        if (p == null) return 0;
+        if (isExternal(p)) {
+            if (isLeftChild) return 1;
+            else return 0;
+        }
+        return countLeftExternalHelper(left(p), true) + countLeftExternalHelper(right(p), false);
+    }
+
+    // Q5: count total number of descendants of a node
+    public int countDescendants(Position<E> p) {
+        if (p == null) return 0;
+        int count = 0;
+        for (Position<E> c : children(p)) {
+            count += 1 + countDescendants(c);
+        }
+        return count;
+    }
+
+    // Q4: build trees for EXAMFUN traversals
+    @SuppressWarnings("unchecked")
+    public void buildPreorderEXAMFUN() {
+        //        E
+        //       / \
+        //      X   F
+        //     / \   \
+        //    A   M   U
+        //             \
+        //              N
+        Position<E> e = addRoot((E) "E");
+        Position<E> x = addLeft(e, (E) "X");
+        Position<E> f = addRight(e, (E) "F");
+        addLeft(x, (E) "A");
+        addRight(x, (E) "M");
+        Position<E> u = addRight(f, (E) "U");
+        addRight(u, (E) "N");
+    }
+
+    @SuppressWarnings("unchecked")
+    public void buildInorderEXAMFUN() {
+        //        M
+        //       / \
+        //      A   U
+        //       \   / \
+        //        X  F   N
+        //         \
+        //          E (pseudo, see below)
+        // Inorder: left, root, right
+        // E X A M F U N
+        // root = M, left subtree inorder = E X A, right subtree inorder = F U N
+        //        M
+        //       / \
+        //      X   U
+        //     / \  / \
+        //    E  A F   N
+        Position<E> m = addRoot((E) "M");
+        Position<E> x = addLeft(m, (E) "X");
+        Position<E> u = addRight(m, (E) "U");
+        addLeft(x, (E) "E");
+        addRight(x, (E) "A");
+        addLeft(u, (E) "F");
+        addRight(u, (E) "N");
+    }
+
+    @SuppressWarnings("unchecked")
+    public void buildPostorderEXAMFUN() {
+        // Postorder: left, right, root
+        // E X A M F U N
+        // root = N, left subtree postorder = E X A M F, right subtree postorder = U
+        //         N
+        //        / \
+        //       F   U
+        //      / \
+        //     X   M
+        //    / \
+        //   E   A
+        Position<E> n = addRoot((E) "N");
+        Position<E> f = addLeft(n, (E) "F");
+        addRight(n, (E) "U");
+        Position<E> x = addLeft(f, (E) "X");
+        addRight(f, (E) "M");
+        addLeft(x, (E) "E");
+        addRight(x, (E) "A");
     }
 
     /**
