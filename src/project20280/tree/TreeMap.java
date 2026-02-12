@@ -505,8 +505,14 @@ public class TreeMap<K, V> extends AbstractSortedMap<K, V> {
         return buffer;
     }
 
+    @Override
     public String toString() {
-        return tree.toString();
+
+        ArrayList<K> keys = new ArrayList<>();
+        for (Entry<K, V> e : entrySet()) {
+            keys.add(e.getKey());
+        }
+        return keys.toString();
     }
 
     /**

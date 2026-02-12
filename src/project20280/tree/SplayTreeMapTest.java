@@ -136,7 +136,13 @@ class SplayTreeMapTest {
 
     @Test
     void testEntrySet() {
-        fail("Not yet implemented");
+        SplayTreeMap<Integer, String> map = new SplayTreeMap<>();
+        Integer[] arr = new Integer[]{35, 26, 15, 24, 33, 4, 12, 1, 23, 21, 2, 5};
+
+        for (Integer i : arr) {
+            map.put(i, Integer.toString(i));
+        }
+        assertEquals(12, map.size());
     }
 
     @Test

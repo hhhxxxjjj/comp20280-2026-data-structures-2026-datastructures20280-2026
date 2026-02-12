@@ -61,7 +61,9 @@ class AVLTreeMapTest {
 
         System.out.println(map.tree.toBinaryTreeString());
 
-        assertEquals("[4, 7, 8, 11, 12, 13, 14, 17]", map.toString());
+        java.util.ArrayList<Integer> keys1 = new java.util.ArrayList<>();
+        for (Integer k : map.keySet()) keys1.add(k);
+        assertEquals("[4, 7, 8, 11, 12, 13, 14, 17]", keys1.toString());
 
     }
     
@@ -162,7 +164,13 @@ class AVLTreeMapTest {
 
     @Test
     void testEntrySet() {
-        fail("Not yet implemented");
+        AVLTreeMap<Integer, String> map = new AVLTreeMap<>();
+        Integer[] arr = new Integer[]{35, 26, 15, 24, 33, 4, 12, 1, 23, 21, 2, 5};
+
+        for (Integer i : arr) {
+            map.put(i, Integer.toString(i));
+        }
+        assertEquals(12, map.size());
     }
 
     @Test

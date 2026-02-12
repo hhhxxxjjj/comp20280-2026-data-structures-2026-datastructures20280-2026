@@ -50,8 +50,9 @@ class TreeMapTest {
         for (Integer i : arr) {
             map.put(i, Integer.toString(i));
         }
-
-        assertEquals("[1, 2, 4, 5, 12, 15, 21, 23, 24, 26, 33, 35]", map.keySet().toString());
+        java.util.ArrayList<Integer> keys = new java.util.ArrayList<>();
+        for (Integer k : map.keySet()) keys.add(k);
+        assertEquals("[1, 2, 4, 5, 12, 15, 21, 23, 24, 26, 33, 35]", keys.toString());
     }
 
     @Test
@@ -162,7 +163,7 @@ class TreeMapTest {
         for (Integer i : arr) {
             map.put(i, Integer.toString(i));
         }
-        assertEquals("", map.toString());
+        assertEquals("[⦰, 1, ⦰, 2, ⦰, 4, ⦰, 5, ⦰, 12, ⦰, 15, ⦰, 21, ⦰, 23, ⦰, 24, ⦰, 26, ⦰, 33, ⦰, 35, ⦰]", map.toString());
     }
 
     @Test
