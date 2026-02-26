@@ -108,6 +108,36 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
             System.out.print(p.getElement());
         }
         System.out.println();
+
+        // --- Q3: construct from inorder + preorder ---
+        System.out.println("\n--- Q3: construct from inorder + preorder ---");
+        Integer[] inorder = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30};
+        Integer[] preorder = {18, 2, 1, 14, 13, 12, 4, 3, 9, 6, 5, 8, 7, 10, 11, 15, 16,
+                17, 28, 23, 19, 22, 20, 21, 24, 27, 26, 25, 29, 30};
+        LinkedBinaryTree<Integer> bt3 = new LinkedBinaryTree<>();
+        bt3.construct(inorder, preorder);
+        System.out.println(bt3.toBinaryTreeString());
+
+        // --- Q4: root to leaf paths ---
+        System.out.println("\n--- Q4: root to leaf paths ---");
+        Integer[] inorder4 = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+        Integer[] preorder4 = {5, 1, 0, 4, 2, 3, 7, 6, 8};
+        LinkedBinaryTree<Integer> bt4 = new LinkedBinaryTree<>();
+        bt4.construct(inorder4, preorder4);
+        System.out.println(bt4.toBinaryTreeString());
+        System.out.println(bt4.rootToLeafPaths());
+
+        // --- Q5: width (diameter in nodes) ---
+        System.out.println("\n--- Q5: width ---");
+        Integer[] inorder5 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                19, 20, 21, 22};
+        Integer[] preorder5 = {6, 5, 3, 2, 1, 0, 4, 17, 10, 9, 8, 7, 16, 14, 13, 12, 11, 15, 21,
+                20, 19, 18, 22};
+        LinkedBinaryTree<Integer> bt5 = new LinkedBinaryTree<>();
+        bt5.construct(inorder5, preorder5);
+        System.out.println(bt5.toBinaryTreeString());
+        System.out.println("Width: " + bt5.width());
     }
 
 
@@ -395,6 +425,87 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         return null;
     }
 
+    // Q3: construct binary tree from inorder and preorder traversal
+    public void construct(E[] inorder, E[] preorder) {
+        size = 0;
+        root = constructHelper(inorder, 0, inorder.length - 1,
+                preorder, 0, preorder.length - 1, null);
+    }
+
+    private Node<E> constructHelper(E[] inorder, int inStart, int inEnd,
+                                    E[] preorder, int preStart, int preEnd,
+                                    Node<E> parent) {
+        if (inStart > inEnd || preStart > preEnd) {
+            return null;
+        }
+
+        E rootVal = preorder[preStart];
+        Node<E> node = createNode(rootVal, parent, null, null);
+        size++;
+
+        int rootIndex = -1;
+        for (int i = inStart; i <= inEnd; i++) {
+            if (inorder[i].equals(rootVal)) {
+                rootIndex = i;
+                break;
+            }
+        }
+
+        int leftSize = rootIndex - inStart;
+
+        node.setLeft(constructHelper(inorder, inStart, rootIndex - 1,
+                preorder, preStart + 1, preStart + leftSize, node));
+        node.setRight(constructHelper(inorder, rootIndex + 1, inEnd,
+                preorder, preStart + leftSize + 1, preEnd, node));
+
+        return node;
+    }
+
+    // Q4: find all root-to-leaf paths
+    public ArrayList<ArrayList<E>> rootToLeafPaths() {
+        ArrayList<ArrayList<E>> result = new ArrayList<>();
+        ArrayList<E> currentPath = new ArrayList<>();
+        rootToLeafPathsHelper(root, currentPath, result);
+        return result;
+    }
+
+    private void rootToLeafPathsHelper(Position<E> p, ArrayList<E> currentPath,
+                                       ArrayList<ArrayList<E>> result) {
+        if (p == null) {
+            return;
+        }
+
+        currentPath.add(p.getElement());
+
+        if (isExternal(p)) {
+            result.add(new ArrayList<>(currentPath));
+        } else {
+            rootToLeafPathsHelper(left(p), currentPath, result);
+            rootToLeafPathsHelper(right(p), currentPath, result);
+        }
+
+        currentPath.remove(currentPath.size() - 1);
+    }
+
+    // Q5: width of the binary tree (number of nodes on longest path between any two nodes)
+    public int width() {
+        if (isEmpty()) return 0;
+        int[] result = new int[]{0};
+        widthHelper(root(), result);
+        return result[0];
+    }
+
+    private int widthHelper(Position<E> p, int[] result) {
+        if (p == null) return 0;
+        int leftHeight = widthHelper(left(p), result);
+        int rightHeight = widthHelper(right(p), result);
+        int pathThroughNode = leftHeight + rightHeight + 1;
+        if (pathThroughNode > result[0]) {
+            result[0] = pathThroughNode;
+        }
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+
     public String toBinaryTreeString() {
         BinaryTreePrinter<E> btp = new BinaryTreePrinter<>(this);
         return btp.print();
@@ -488,16 +599,6 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
     public void buildInorderEXAMFUN() {
         //        M
         //       / \
-        //      A   U
-        //       \   / \
-        //        X  F   N
-        //         \
-        //          E (pseudo, see below)
-        // Inorder: left, root, right
-        // E X A M F U N
-        // root = M, left subtree inorder = E X A, right subtree inorder = F U N
-        //        M
-        //       / \
         //      X   U
         //     / \  / \
         //    E  A F   N
@@ -512,9 +613,6 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
 
     @SuppressWarnings("unchecked")
     public void buildPostorderEXAMFUN() {
-        // Postorder: left, right, root
-        // E X A M F U N
-        // root = N, left subtree postorder = E X A M F, right subtree postorder = U
         //         N
         //        / \
         //       F   U
