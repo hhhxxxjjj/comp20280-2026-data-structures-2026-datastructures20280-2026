@@ -268,6 +268,37 @@ public class SinglyLinkedList<E> implements List<E> {
         return copy;
     }
 
+    // Q6(a): Print linked list in reverse using recursion
+    public void printReverse() {
+        printReverseHelper(head);
+        System.out.println();
+    }
+
+    private void printReverseHelper(Node<E> node) {
+        if (node == null) {
+            return;
+        }
+        printReverseHelper(node.getNext());
+        System.out.print(node.getElement() + " ");
+    }
+
+    // Q7: Recursive copy of linked list
+    public SinglyLinkedList<E> recursiveCopy() {
+        SinglyLinkedList<E> copy = new SinglyLinkedList<>();
+        if (head != null) {
+            copy.head = recursiveCopyHelper(head);
+            copy.size = this.size;
+        }
+        return copy;
+    }
+
+    private Node<E> recursiveCopyHelper(Node<E> node) {
+        if (node == null) {
+            return null;
+        }
+        return new Node<>(node.getElement(), recursiveCopyHelper(node.getNext()));
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
         Node<E> curr = head;
@@ -315,5 +346,27 @@ public class SinglyLinkedList<E> implements List<E> {
 
         l1.sortedMerge(l2);
         System.out.println("Merged L1: " + l1);
+
+        // Q6 test
+        System.out.println("\n=== Q6: Print Reverse ===");
+        SinglyLinkedList<Integer> q6 = new SinglyLinkedList<>();
+        q6.addLast(1);
+        q6.addLast(2);
+        q6.addLast(3);
+        q6.addLast(4);
+        q6.addLast(5);
+        System.out.println("Original: " + q6);
+        System.out.print("Reversed print: ");
+        q6.printReverse();
+
+        // Q7 test
+        System.out.println("\n=== Q7: Recursive Copy ===");
+        SinglyLinkedList<Integer> q7 = new SinglyLinkedList<>();
+        q7.addLast(10);
+        q7.addLast(20);
+        q7.addLast(30);
+        System.out.println("Original: " + q7);
+        SinglyLinkedList<Integer> q7copy = q7.recursiveCopy();
+        System.out.println("Copy: " + q7copy);
     }
 }

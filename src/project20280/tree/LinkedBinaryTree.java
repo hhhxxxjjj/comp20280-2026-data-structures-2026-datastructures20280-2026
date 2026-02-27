@@ -138,6 +138,20 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         bt5.construct(inorder5, preorder5);
         System.out.println(bt5.toBinaryTreeString());
         System.out.println("Width: " + bt5.width());
+
+        // --- Q9: print leaf nodes ---
+        System.out.println("\n--- Q9: Leaf Nodes ---");
+        LinkedBinaryTree<String> q9tree = new LinkedBinaryTree<>();
+        Position<String> a = q9tree.addRoot("A");
+        Position<String> b = q9tree.addLeft(a, "B");
+        Position<String> c = q9tree.addRight(a, "C");
+        Position<String> d = q9tree.addLeft(b, "D");
+        Position<String> e = q9tree.addRight(b, "E");
+        Position<String> f = q9tree.addRight(c, "F");
+        Position<String> g = q9tree.addLeft(e, "G");
+        Position<String> hh = q9tree.addRight(e, "H");
+        System.out.println(q9tree.toBinaryTreeString());
+        System.out.println("Leaves: " + q9tree.getLeaves());
     }
 
 
@@ -627,6 +641,25 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         addRight(f, (E) "M");
         addLeft(x, (E) "E");
         addRight(x, (E) "A");
+    }
+
+    // Q9: Get all leaf nodes from left to right
+    public java.util.List<E> getLeaves() {
+        java.util.List<E> leaves = new java.util.ArrayList<>();
+        getLeavesHelper(root, leaves);
+        return leaves;
+    }
+
+    private void getLeavesHelper(Position<E> p, java.util.List<E> leaves) {
+        if (p == null) {
+            return;
+        }
+        if (isExternal(p)) {
+            leaves.add(p.getElement());
+            return;
+        }
+        getLeavesHelper(left(p), leaves);
+        getLeavesHelper(right(p), leaves);
     }
 
     /**
