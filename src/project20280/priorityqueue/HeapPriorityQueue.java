@@ -204,15 +204,73 @@ public class HeapPriorityQueue<K, V> extends AbstractPriorityQueue<K, V> {
     }
 
     public static void main(String[] args) {
-        Integer[] rands = new Integer[]{35, 26, 15, 24, 33, 4, 12, 1, 23, 21, 2, 5};
-        HeapPriorityQueue<Integer, Integer> pq = new HeapPriorityQueue<>(rands, rands);
+        // ================================================================
+        // Q1: Illustrate heap.insert() step by step
+        // Input: [2, 5, 16, 4, 10, 23, 39, 18, 26, 15]
+        // ================================================================
+        System.out.println("=== Q1: heap.insert() step by step ===");
+        int[] input = {2, 5, 16, 4, 10, 23, 39, 18, 26, 15};
+        HeapPriorityQueue<Integer, Integer> pq1 = new HeapPriorityQueue<>();
+        for (int v : input) {
+            pq1.insert(v, v);
+            System.out.println("After insert(" + v + "): " + pq1);
+        }
+        System.out.println("Final heap: " + pq1);
 
-        System.out.println("elements: " + rands);
-        System.out.println("after adding elements: " + pq);
+        // ================================================================
+        // Q2: Preorder traversal of the heap
+        // Heap array: [2, 4, 16, 5, 10, 23, 39, 18, 26, 15]
+        // Preorder (root→left→right): 2, 4, 5, 18, 26, 10, 15, 16, 23, 39
+        // ================================================================
+        System.out.println("\n=== Q2: Preorder traversal ===");
+        System.out.print("Preorder: ");
+        printPreorder(pq1.heap, 0);
+        System.out.println();
 
-        System.out.println("min element: " + pq.min());
+        // ================================================================
+        // Q3: Postorder traversal
+        // Postorder (left→right→root): 18, 26, 5, 15, 10, 4, 23, 39, 16, 2
+        // ================================================================
+        System.out.println("\n=== Q3: Postorder traversal ===");
+        System.out.print("Postorder: ");
+        printPostorder(pq1.heap, 0);
+        System.out.println();
 
-        pq.removeMin();
-        System.out.println("after removeMin: " + pq);
+        // ================================================================
+        // Q4: Theory answers
+        // ================================================================
+        System.out.println("\n=== Q4: Theory ===");
+        System.out.println("Q: Can a min-heap preorder traversal be non-descending?");
+        System.out.println("A: YES! Preorder = [2,4,5,18,26,10,15,16,23,39] is NOT descending.");
+        System.out.println("Q: Can a min-heap postorder traversal be non-ascending?");
+        System.out.println("A: YES! Postorder = [18,26,5,15,10,4,23,39,16,2] is NOT ascending.");
+
+        // ================================================================
+        // Q5: HeapPriorityQueue - demonstrate insert, min, removeMin
+        // ================================================================
+        System.out.println("\n=== Q5: HeapPriorityQueue operations ===");
+        Integer[] keys = {35, 26, 15, 24, 33, 4, 12, 1, 23, 21, 2, 5};
+        HeapPriorityQueue<Integer, Integer> pq5 = new HeapPriorityQueue<>(keys, keys);
+        System.out.println("Build heap from array (O(n) heapify): " + pq5);
+        System.out.println("min(): " + pq5.min());
+        pq5.removeMin();
+        System.out.println("After removeMin(): " + pq5);
+        System.out.println("New min(): " + pq5.min());
+    }
+
+    /** Helper: preorder traversal of heap array (root, left subtree, right subtree) */
+    private static <K, V> void printPreorder(java.util.ArrayList<Entry<K, V>> heap, int i) {
+        if (i >= heap.size()) return;
+        System.out.print(heap.get(i).getKey() + " ");
+        printPreorder(heap, 2 * i + 1); // left
+        printPreorder(heap, 2 * i + 2); // right
+    }
+
+    /** Helper: postorder traversal of heap array (left subtree, right subtree, root) */
+    private static <K, V> void printPostorder(java.util.ArrayList<Entry<K, V>> heap, int i) {
+        if (i >= heap.size()) return;
+        printPostorder(heap, 2 * i + 1); // left
+        printPostorder(heap, 2 * i + 2); // right
+        System.out.print(heap.get(i).getKey() + " ");
     }
 }

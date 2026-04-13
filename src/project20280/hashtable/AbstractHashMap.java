@@ -1,7 +1,9 @@
 package project20280.hashtable;
 
 import project20280.interfaces.AbstractMap;
+import project20280.interfaces.Entry;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -98,25 +100,44 @@ public abstract class AbstractHashMap<K, V> extends AbstractMap<K, V> {
      */
     @Override
     public V put(K key, V value) {
-        // TODO
-        return null;
+        // 将键值对存入对应的桶中
+        V answer = bucketPut(hashValue(key), key, value);
+        // 如果负载因子超过 0.5，则将表扩大为原来的两倍（+1 以尽量保持奇数/质数）
+        if (n > capacity / 2) {
+            resize(capacity * 2 + 1);
+        }
+        return answer;
     }
 
     // private utilities
 
     /**
      * Hash function applying MAD method to default hash code.
+     * MAD 压缩公式：h(k) = |a * hashCode(k) + b| mod p   mod N
+     * 其中 a=scale, b=shift, p=prime, N=capacity
      */
     private int hashValue(K key) {
-        // TODO
-        return 0;
+        return (int) ((Math.abs(key.hashCode() * scale + shift) % prime) % capacity);
     }
 
     /**
      * Updates the size of the hash table and rehashes all entries.
+     * 扩容：保存所有旧条目，重建新表，再重新插入所有条目
      */
     private void resize(int newCap) {
-        // TODO
+        // 先把所有现有条目保存起来
+        ArrayList<Entry<K, V>> buffer = new ArrayList<>(n);
+        for (Entry<K, V> e : entrySet()) {
+            buffer.add(e);
+        }
+        // 更新容量并重建空表
+        capacity = newCap;
+        createTable();
+        n = 0;
+        // 将所有条目重新插入新表（会重新计算哈希值）
+        for (Entry<K, V> e : buffer) {
+            put(e.getKey(), e.getValue());
+        }
     }
 
     // protected abstract methods to be implemented by subclasses
